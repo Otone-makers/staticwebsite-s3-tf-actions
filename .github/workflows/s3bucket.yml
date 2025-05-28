@@ -5,7 +5,8 @@ on:
       - main
 
 jobs:
-  deploy:
+  terraform:
+    name: Deploy Terraform Job
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -13,16 +14,7 @@ jobs:
       packages: write
 
     steps:
-      
-      # Pulls the latest version of your code from the Github repository
-      - name: Checkout Repository
-        uses: actions/checkout@v2
 
-      # Installs Terraform on the Github runner  
-      -name: Set up Terraform
-       uses: hashicorp/setup-terraform@v3
-
-      # configure your AWS OIDC access by using the credentials stored in Github secrets
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
@@ -31,18 +23,20 @@ jobs:
           role-session-name: githubworkflowsession
           audience: sts.amazonaws.com
 
-      # Initialized terraform    
-      - name: Initialize Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true  
+ 
+      - name: Terraform Init   
         run: terraform init
         
-      # Execute the terraform plan
       - name: Terraform Plan
         run: terraform plan
-        
-      # Deploys terraform changes  
+         
       - name: Terraform Apply
         run: terrfaorm apply -auto-approve
-
-      # Destroy terraform resources (uncomment lines below) 
-      # - name: Terrafoem Destroy
-          run: terraform destroy -auto-approve    
+ 
