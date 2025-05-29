@@ -30,7 +30,7 @@ resource "aws_s3_bucket_acl" "example" {
 }
 
 resource "aws_s3_bucket_policy" "host_bucket_policy" {
-  bucket =  aws_s3_bucket.demo-bucket.id # ID of the S3 bucket
+  bucket = aws_s3_bucket.demo-bucket.id # ID of the S3 bucket
 
   # Policy JSON for allowing public read access
   policy = jsonencode({
@@ -39,7 +39,7 @@ resource "aws_s3_bucket_policy" "host_bucket_policy" {
       {
         "Effect" : "Allow",
         "Principal" : "*",
-        "Action" : "s3:GetObject",
+        "Action" : "s3:*",
         "Resource": "arn:aws:s3:::${var.my_bucket_name}/*"
       }
     ]
@@ -47,26 +47,30 @@ resource "aws_s3_bucket_policy" "host_bucket_policy" {
 }
 
 module "template_files" {
-    source = "hashicorp/dir/template"
+  source = "hashicorp/dir/template"
 
-    base_dir = "${path.module}/public"
+  base_dir = "${path.module}/public"
 }
 
 # https://registry.terraform.io/modules/hashicorp/dir/template/latest
 
 
 resource "aws_s3_bucket_website_configuration" "web-config" {
-  bucket =    aws_s3_bucket.demo-bucket.id  # ID of the S3 bucket
+  bucket = aws_s3_bucket.demo-bucket.id # ID of the S3 bucket
 
   # Configuration for the index document
   index_document {
     suffix = "index.html"
   }
+
+  error_document {
+    key = "error.html"
+  }
 }
 
 # AWS S3 object resource for hosting bucket files
 resource "aws_s3_object" "Bucket_files" {
-  bucket =  aws_s3_bucket.demo-bucket.id  # ID of the S3 bucket
+  bucket = aws_s3_bucket.demo-bucket.id # ID of the S3 bucket
 
   for_each     = module.template_files.files
   key          = each.key
