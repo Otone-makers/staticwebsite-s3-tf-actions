@@ -6,6 +6,9 @@ on:
 
 jobs:
   terraform:
+    defaults:
+      run:
+        working-directory: $/home/amakisi/Desktop/Learning/AWS/Automation/staticwebsite-s3-tf-actions-01/main.tf
     name: Deploy Terraform Job
     runs-on: ubuntu-latest
     permissions:
