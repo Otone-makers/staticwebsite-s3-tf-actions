@@ -6,17 +6,20 @@ on:
 
 jobs:
   terraform:
+    name: Deploy Terraform Job
+    runs-on: ubuntu latest
     defaults:
       run:
-        working-directory: $/home/amakisi/Desktop/Learning/AWS/Automation/staticwebsite-s3-tf-actions-01/main.tf
-    name: Deploy Terraform Job
-    runs-on: ubuntu-latest
+        working-directory: .
+    
     permissions:
       id-token: write
       contents: read
       packages: write
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@master
